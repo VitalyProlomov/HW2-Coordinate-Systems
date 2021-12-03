@@ -9,32 +9,71 @@ class BoundBoxTest {
 
     @Test
     void getTopRightCoord_() {
+        Coord2D c1 = new Coord2D(8,9);
+        Coord2D c2 = new Coord2D(2,0);
+        BoundBox b1 = new BoundBox(c1, c2);
 
+        assertEquals(b1.getTopRightCoord_(), c2);
+        assertEquals(b1.getTopRightCoord_(), b1.topRightCoord_);
     }
 
     @Test
     void getBottomLeftCoord_() {
+        Coord2D c1 = new Coord2D(8,9);
+        Coord2D c2 = new Coord2D(2,0);
+        BoundBox b1 = new BoundBox(c1, c2);
+
+        assertEquals(b1.getBottomLeftCoord_(), c1);
+        assertEquals(b1.getBottomLeftCoord_(), b1.bottomLeftCoord_);
     }
 
     @Test
-    void updateBoundBox() {
+    void updateBoundBox() throws DAGConstraintException {
+        Point point1 = new Point(new Coord2D(2,4));
+        Point point2 = new Point((new Coord2D(5.555, -12)));
+        Point point3 = new Point(new Coord2D(3,0));
+
+        Origin origin = new Origin(new Coord2D(0,8.6));
+        Origin childEmptyOrigin = new Origin(new Coord2D(8,1000));
+
+        HashSet<Point> children1 = new HashSet<Point>();
+        children1.add(point1);
+        children1.add(point2);
+        children1.add(point3);
+
+        children1.add(childEmptyOrigin);
+        origin.setChildren_(children1);
+        BoundBox boundsCounted = origin.getBounds();
+
+        BoundBox correctAnswer = new BoundBox(new Coord2D(2, -12),new Coord2D(5.555, 4));
+        assertEquals(correctAnswer, origin.getBounds());
+
+        Coord2D c = new Coord2D(0,0);
+        point1.setPosition(new Coord2D(0,0));
+        assertEquals(BoundBox.updateBoundBox(point1), new BoundBox(c, c));
     }
 
     @Test
     void unite() {
+        Point point1 = new Point(new Coord2D(2,4));
+        Point point2 = new Point((new Coord2D(5.555, -12)));
+        assertEquals(point1.bounds_.unite(point2.bounds_), new BoundBox(new Coord2D(2, -12), new Coord2D(5.555, 4)));
+
     }
 
-    @Test
-    void shiftBox() {
-    }
 
     @Test
     void testEquals() {
+        Coord2D coord1 = new Coord2D(2,4);
+        Coord2D coord2 = new Coord2D(5.555, -12);
 
+        BoundBox b1 = new BoundBox(coord1, coord2);
+        BoundBox b12 = new BoundBox(coord1, coord2);
+        assertEquals(b1, b12);
     }
 
     @Test
-    public void shouldCountBoundBoxCorrectlyInOriginExample1() throws DAGConstraintException {
+    public void testCountBoundBoxInOrigin1() throws DAGConstraintException {
         // Counting BoundBox of the Origin o1 with 3 points as its children
 
         Point point1 = new Point(new Coord2D(2,4));
@@ -56,7 +95,7 @@ class BoundBoxTest {
     }
 
     @Test
-    public void shouldCountBoundBoxCorrectlyInOriginExample2() throws DAGConstraintException {
+    public void testShouldCountBoundBoxInOrigin2() throws DAGConstraintException {
         // Counting bounds of the origin with some inserted origins (just 1 level of insertions).
 
         Coord2D c1 = new Coord2D(3, 3);
@@ -92,7 +131,7 @@ class BoundBoxTest {
     }
 
     @Test
-    public void shouldCountBoundBoxCorrectlyInOriginExample3() throws DAGConstraintException {
+    public void testCountBoundBoxInOrigin3() throws DAGConstraintException {
         Point point1 = new Point(new Coord2D(2,4));
         Point point2 = new Point((new Coord2D(5.555, -12)));
         Point point3 = new Point(new Coord2D(3,0));
@@ -114,7 +153,7 @@ class BoundBoxTest {
     }
 
     @Test
-    public void shouldCountBoundBoxCorrectlyInOriginExample4() throws DAGConstraintException {
+    public void testCountBoundBoxInOrigin4() throws DAGConstraintException {
         // Multiple level of origin insertion (2 levels), normal order of inserting.
 
         Origin o1 = new Origin(new Coord2D(1000,1000));

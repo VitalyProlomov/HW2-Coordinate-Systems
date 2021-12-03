@@ -8,7 +8,7 @@ import java.util.Set;
  * starting point and its position referring to some other origin or space.
  */
 public class Origin extends Point{
-    private Set<Point> children_;
+    protected Set<Point> children_;
 
     public Origin(Coord2D shift) {
         // Property bounds_ will be initialized incorrectly, but we
@@ -77,7 +77,7 @@ public class Origin extends Point{
 
     /**
      * Every time getBounds is called bounds_ is actually updated.
-     *     At other times it might be incorrect.
+     * At other times it might be incorrect.
      */
     public BoundBox getBounds() {
         if (children_.size() == 0) {
